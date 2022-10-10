@@ -1,7 +1,7 @@
 var createError = require("http-errors");
 var express = require("express");
 var path = require("path");
-var cookieParser = require("cookie-parser");
+var cookieParser = require("cookie-parser"); //included by express generator we must provide secret key as argument
 var logger = require("morgan");
 
 var indexRouter = require("./routes/index");
@@ -35,32 +35,42 @@ app.set("view engine", "jade");
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(cookieParser("3142-0987-5436-66998")); //we must provide secret key as argument, it can be any string and it will be used by cookie parser to encrypt information
 
 //Basic Authentication, place here so user needs to be authenticated BEFORE they reach static info, if not move it below
 //write authentication function from scratch:
 function auth(req, res, next) {
-  console.log(req.headers);
-  const authHeader = req.headers.authorization;
-  if (!authHeader) {
-    const err = new Error("You are not authenticated");
-    res.setHeader("WWW-Authenticate", "Basic");
-    err.status = 401;
-    return next(err);
-  }
-  //use Buffer.from() (global object) to create new buffer filled with specific string, array, or buffer
-  const auth = Buffer.from(authHeader.split(" ")[1], "base64")
-    .toString()
-    .split(":");
-  const user = auth[0];
-  const pass = auth[1];
-  if (user === "admin" && pass === "password") {
-    return next(); //user is authorized
+  if (!req.signedCookies.user) {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      const err = new Error("You are not authenticated");
+      res.setHeader("WWW-Authenticate", "Basic");
+      err.status = 401;
+      return next(err);
+    }
+    //use Buffer.from() (global object) to create new buffer filled with specific string, array, or buffer
+    const auth = Buffer.from(authHeader.split(" ")[1], "base64")
+      .toString()
+      .split(":");
+    const user = auth[0];
+    const pass = auth[1];
+    if (user === "admin" && pass === "password") {
+      res.cookie("user", "admin", { signed: true });
+      return next(); //user is authorized
+    } else {
+      const err = new Error("You are not authenticated");
+      res.setHeader("WWW-Authenticate", "Basic");
+      err.status = 401;
+      return next(err);
+    }
   } else {
-    const err = new Error("You are not authenticated");
-    res.setHeader("WWW-Authenticate", "Basic");
-    err.status = 401;
-    return next(err);
+    if (req.signedCookies.user === "admin") {
+      return next();
+    } else {
+      const err = new Error("You are not authenticated");
+      err.status = 401;
+      return next(err);
+    }
   }
 }
 app.use(auth);

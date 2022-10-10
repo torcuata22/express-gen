@@ -1,7 +1,7 @@
 var createError = require("http-errors");
 var express = require("express");
 var path = require("path");
-var cookieParser = require("cookie-parser"); //included by express generator we must provide secret key as argument
+//var cookieParser = require("cookie-parser"); //included by express generator we must provide secret key as argument
 var logger = require("morgan");
 const session = require("express-session");
 const FileStore = require("session-file-store")(session); //2 sets of params after function call: required func is returning another as it second value, so we are calling the second function with the session parameter
@@ -26,7 +26,7 @@ const connect = mongoose.connect(url, {
 connect.then(
   () => console.log("Connected correctly to server"),
   (err) => console.log(err)
-); //stablishes connection to mongdb server
+); //establishes connection to mongdb server
 
 var app = express();
 
@@ -43,42 +43,43 @@ app.use(
   session({
     name: "session-id",
     secret: "3142-0987-5436-66998",
-    saveUnitizalied: false, //when new session is created but not updated, at end of request, it will not be saved (empty session) and no cookie will be sent to client
+    saveUninitialized: false,
     resave: false,
-    store: new FileStore(), //creates new filestore object to save session info
+    store: new FileStore(),
   })
 );
-//Basic Authentication, place here so user needs to be authenticated BEFORE they reach static info, if not move it below
-//write authentication function from scratch:
+
 function auth(req, res, next) {
-  if (!req.signedCookies.user) {
+  console.log(req.session);
+
+  if (!req.session.user) {
     const authHeader = req.headers.authorization;
     if (!authHeader) {
-      const err = new Error("You are not authenticated");
+      const err = new Error("You are not authenticated!");
       res.setHeader("WWW-Authenticate", "Basic");
       err.status = 401;
       return next(err);
     }
-    //use Buffer.from() (global object) to create new buffer filled with specific string, array, or buffer
+
     const auth = Buffer.from(authHeader.split(" ")[1], "base64")
       .toString()
       .split(":");
     const user = auth[0];
     const pass = auth[1];
     if (user === "admin" && pass === "password") {
-      res.cookie("user", "admin", { signed: true });
-      return next(); //user is authorized
+      req.session.user = "admin";
+      return next(); // authorized
     } else {
-      const err = new Error("You are not authenticated");
+      const err = new Error("You are not authenticated!");
       res.setHeader("WWW-Authenticate", "Basic");
       err.status = 401;
       return next(err);
     }
   } else {
-    if (req.signedCookies.user === "admin") {
+    if (req.session.user === "admin") {
       return next();
     } else {
-      const err = new Error("You are not authenticated");
+      const err = new Error("You are not authenticated!");
       err.status = 401;
       return next(err);
     }

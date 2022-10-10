@@ -49,6 +49,9 @@ app.use(
   })
 );
 
+app.use("/", indexRouter);
+app.use("/users", userRouter);
+
 function auth(req, res, next) {
   console.log(req.session);
 

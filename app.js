@@ -3,6 +3,8 @@ var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser"); //included by express generator we must provide secret key as argument
 var logger = require("morgan");
+const session = require("express-session");
+const FileStore = require("session-file-store")(session); //2 sets of params after function call: required func is returning another as it second value, so we are calling the second function with the session parameter
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
@@ -35,8 +37,17 @@ app.set("view engine", "jade");
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser("3142-0987-5436-66998")); //we must provide secret key as argument, it can be any string and it will be used by cookie parser to encrypt information
+//app.use(cookieParser("3142-0987-5436-66998")); //we must provide secret key as argument, it can be any string and it will be used by cookie parser to encrypt information. DO NOT USE IT WITH EXPRESS-SESSIONS
 
+app.use(
+  session({
+    name: "session-id",
+    secret: "3142-0987-5436-66998",
+    saveUnitizalied: false, //when new session is created but not updated, at end of request, it will not be saved (empty session) and no cookie will be sent to client
+    resave: false,
+    store: new FileStore(), //creates new filestore object to save session info
+  })
+);
 //Basic Authentication, place here so user needs to be authenticated BEFORE they reach static info, if not move it below
 //write authentication function from scratch:
 function auth(req, res, next) {

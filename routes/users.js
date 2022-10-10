@@ -1,7 +1,6 @@
 var express = require("express");
-var router = express.Router();
-
 const User = require("../models/user");
+var router = express.Router();
 
 /* GET users listing. */
 router.get("/", function (req, res, next) {
@@ -19,12 +18,13 @@ router.post("/signup", (req, res, next) => {
         User.create({
           username: req.body.username,
           password: req.body.password,
-        });
-        then((user) => {
-          res.statusCode = 200;
-          res.setHeader("Content-type", "application/json");
-          res.json({ status: "Registration Successful!", user: user });
-        });
+        })
+          .then((user) => {
+            res.statusCode = 200;
+            res.setHeader("Content-type", "application/json");
+            res.json({ status: "Registration Successful!", user: user });
+          })
+          .catch((err) => next(err));
       }
     })
     .catch((err) => next(err));
@@ -48,7 +48,7 @@ router.post("/login", (req, res, next) => {
     User.findOne({ username: username })
       .then((user) => {
         if (!user) {
-          const err = new Error(`User ${username} doe not exist`);
+          const err = new Error(`User ${username} does not exist`);
           err.status = 401;
           return next(err);
         } else if (user.password !== password) {

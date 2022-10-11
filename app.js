@@ -5,6 +5,8 @@ var path = require("path");
 var logger = require("morgan");
 const session = require("express-session");
 const FileStore = require("session-file-store")(session); //2 sets of params after function call: required func is returning another as it second value, so we are calling the second function with the session parameter
+const passport = require("passport");
+const authenticate = require("./authenticate");
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
@@ -49,28 +51,24 @@ app.use(
   })
 );
 
+app.use(passport.initialize());
+app.use(passport.session()); //these two are only necessary is we're using session-based authentication
+
 app.use("/", indexRouter);
-app.use("/users", userRouter);
+app.use("/users", usersRouter);
 
 function auth(req, res, next) {
   console.log(req.session);
 
-  if (!req.session.user) {
-    // const authHeader = req.headers.authorization;
-    //if (!authHeader) {
+  if (!req.user) {
     const err = new Error("You are not authenticated!");
     err.status = 401;
     return next(err);
   } else {
-    if (req.session.user === "authenticated") {
-      return next();
-    } else {
-      const err = new Error("You are not authenticated!");
-      err.status = 401;
-      return next(err);
-    }
+    return next();
   }
 }
+
 app.use(auth);
 
 app.use(express.static(path.join(__dirname, "public")));

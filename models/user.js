@@ -3,7 +3,14 @@ const passportLocalMongoose = require("passport-local-mongoose");
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
-  //removed username and password because plugin will take care of that now
+  firstname: {
+    type: String,
+    default: "",
+  },
+  lastname: {
+    type: String,
+    default: "",
+  },
   admin: {
     type: Boolean,
     default: false,

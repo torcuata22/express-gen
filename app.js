@@ -7,6 +7,7 @@ const session = require("express-session");
 const FileStore = require("session-file-store")(session); //2 sets of params after function call: required func is returning another as it second value, so we are calling the second function with the session parameter
 const passport = require("passport");
 const authenticate = require("./authenticate");
+const config = require("./config");
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
@@ -17,7 +18,7 @@ const partnerRouter = require("./routes/partnerRouter");
 
 const mongoose = require("mongoose");
 
-const url = "mongodb://localhost:27017/nucampsite";
+const url = config.mongoUrl; //used to be const url = "mongodb://localhost:27017/nucampsite";
 const connect = mongoose.connect(url, {
   useCreateIndex: true,
   useFindAndModify: false,
@@ -57,19 +58,19 @@ app.use(passport.session()); //these two are only necessary is we're using sessi
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 
-function auth(req, res, next) {
-  console.log(req.session);
+// function auth(req, res, next) {
+//   console.log(req.session);
 
-  if (!req.user) {
-    const err = new Error("You are not authenticated!");
-    err.status = 401;
-    return next(err);
-  } else {
-    return next();
-  }
-}
+//   if (!req.user) {
+//     const err = new Error("You are not authenticated!");
+//     err.status = 401;
+//     return next(err);
+//   } else {
+//     return next();
+//   }
+// }
 
-app.use(auth);
+//app.use(auth);
 
 app.use(express.static(path.join(__dirname, "public")));
 

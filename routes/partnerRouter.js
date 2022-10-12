@@ -1,5 +1,6 @@
 const express = require("express");
 const Partner = require("../models/partner");
+const authenticate = require("../authenticate");
 
 const partnerRouter = express.Router();
 
@@ -14,7 +15,7 @@ partnerRouter
       })
       .catch((err) => next(err));
   })
-  .post((req, res) => {
+  .post(authenticate.verifyUser, (req, res) => {
     Partner.create(req.body)
       .then((partner) => {
         res.statusCode = 201; //means you created new resource
@@ -23,7 +24,7 @@ partnerRouter
       })
       .catch((err) => next(err));
   })
-  .put((req, res, next) => {
+  .put(authenticate.verifyUser, (req, res, next) => {
     Partner.findByIdAndUpdate(
       req.params.partnerId,
       {
@@ -39,7 +40,7 @@ partnerRouter
       .catch((err) => next(err));
   })
 
-  .delete((req, res) => {
+  .delete(authenticate.verifyUser, (req, res) => {
     Partners.findByIdAndDelete(req.params.partnerId)
       .then((partner) => {
         res.statusCode = 200;
@@ -61,16 +62,16 @@ partnerRouter
       })
       .catch((err) => next(err));
   })
-  .post((req, res) => {
+  .post(authenticate.verifyUser, (req, res) => {
     res.statusCode = 403;
     res.end("POST request not supported");
   })
-  .put((req, res) => {
+  .put(authenticate.verifyUser, (req, res) => {
     res.end(
       `Will update partner: ${req.body.name} and description: ${req.body.description}`
     );
   })
-  .delete((req, res) => {
+  .delete(authenticate.verifyUser, (req, res) => {
     Partners.findByIdAndDelete(req.params.partnerId)
       .then((partner) => {
         res.statusCode = 200;

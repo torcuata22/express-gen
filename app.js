@@ -3,10 +3,10 @@ var express = require("express");
 var path = require("path");
 //var cookieParser = require("cookie-parser"); //included by express generator we must provide secret key as argument
 var logger = require("morgan");
-const session = require("express-session");
-const FileStore = require("session-file-store")(session); //2 sets of params after function call: required func is returning another as it second value, so we are calling the second function with the session parameter
+//const session = require("express-session");
+//const FileStore = require("session-file-store")(session); //2 sets of params after function call: required func is returning another as it second value, so we are calling the second function with the session parameter
 const passport = require("passport");
-const authenticate = require("./authenticate");
+//const authenticate = require("./authenticate");
 const config = require("./config");
 
 var indexRouter = require("./routes/index");
@@ -42,18 +42,18 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 //app.use(cookieParser("3142-0987-5436-66998")); //we must provide secret key as argument, it can be any string and it will be used by cookie parser to encrypt information. DO NOT USE IT WITH EXPRESS-SESSIONS
 
-app.use(
-  session({
-    name: "session-id",
-    secret: "3142-0987-5436-66998",
-    saveUninitialized: false,
-    resave: false,
-    store: new FileStore(),
-  })
-);
+// app.use(
+//   session({
+//     name: "session-id",
+//     secret: "3142-0987-5436-66998",
+//     saveUninitialized: false,
+//     resave: false,
+//     store: new FileStore(),
+//   })
+// );
 
-app.use(passport.initialize());
-app.use(passport.session()); //these two are only necessary is we're using session-based authentication
+//app.use(passport.initialize());
+//app.use(passport.session()); //these two are only necessary is we're using session-based authentication
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);

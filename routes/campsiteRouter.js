@@ -109,16 +109,18 @@ campsiteRouter
         if (campsite) {
           req.body.author = req.user._id;
           campsite.comments.push(req.body);
-          //       .then((campsite) => {
-          //         res.statusCode = 200;
-          //         res.setHeader("Content-Type", "application/json");
-          //         res.json(campsite);
-          //       })
-          //       .catch((err) => next(err));
-          //   } else {
-          //     err = new Error(`Campsite ${req.params.campsiteId} not found`);
-          //     err.status = 404;
-          //     return next(err);
+          campsite
+            .save()
+            .then((campsite) => {
+              res.statusCode = 200;
+              res.setHeader("Content-Type", "application/json");
+              res.json(campsite);
+            })
+            .catch((err) => next(err));
+        } else {
+          err = new Error(`Campsite ${req.params.campsiteId} not found`);
+          err.status = 404;
+          return next(err);
         }
       })
       .catch((err) => next(err));

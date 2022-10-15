@@ -7,9 +7,20 @@ const authenticate = require("../authenticate");
 var router = express.Router();
 
 /* GET users listing. */
-router.get("/", function (req, res) {
-  res.send("respond with a resource");
-});
+router.get(
+  "/",
+  authenticate.verifyUser,
+  authenticate.verifyAdmin,
+  (req, res, next) => {
+    User.find()
+      .then((user) => {
+        res.statusCode = 200;
+        res.setHeader("Content-type", "application/json");
+        res.json(users);
+      }) //or I can chain them
+      .catch((err) => next(err));
+  }
+);
 
 router.post("/signup", (req, res) => {
   User.register(

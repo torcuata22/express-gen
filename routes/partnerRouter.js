@@ -15,7 +15,7 @@ partnerRouter
       })
       .catch((err) => next(err));
   })
-  .post(authenticate.verifyUser, (req, res) => {
+  .post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     Partner.create(req.body)
       .then((partner) => {
         res.statusCode = 201; //means you created new resource
@@ -40,7 +40,7 @@ partnerRouter
       .catch((err) => next(err));
   })
 
-  .delete(authenticate.verifyUser, (req, res) => {
+  .delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     Partners.findByIdAndDelete(req.params.partnerId)
       .then((partner) => {
         res.statusCode = 200;
@@ -66,12 +66,12 @@ partnerRouter
     res.statusCode = 403;
     res.end("POST request not supported");
   })
-  .put(authenticate.verifyUser, (req, res) => {
+  .put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     res.end(
       `Will update partner: ${req.body.name} and description: ${req.body.description}`
     );
   })
-  .delete(authenticate.verifyUser, (req, res) => {
+  .delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     Partners.findByIdAndDelete(req.params.partnerId)
       .then((partner) => {
         res.statusCode = 200;

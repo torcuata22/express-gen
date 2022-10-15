@@ -41,7 +41,7 @@ app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 //app.use(cookieParser("3142-0987-5436-66998")); //we must provide secret key as argument, it can be any string and it will be used by cookie parser to encrypt information. DO NOT USE IT WITH EXPRESS-SESSIONS
-
+app.use(passport.initialize());
 // app.use(
 //   session({
 //     name: "session-id",

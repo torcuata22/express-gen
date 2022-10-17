@@ -66,7 +66,6 @@ app.use(passport.initialize());
 //     store: new FileStore(),
 //   })
 // );
-app.use("/imageUpload", uploadRouter);
 
 //app.use(passport.initialize());
 //app.use(passport.session()); //these two are only necessary is we're using session-based authentication
@@ -93,6 +92,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/campsites", campsiteRouter);
 app.use("/promotions", promotionRouter);
 app.use("/partners", partnerRouter);
+app.use("/imageUpload", uploadRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

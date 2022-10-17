@@ -2,6 +2,7 @@ const express = require("express");
 const authenticate = require("../authenticate");
 const multer = require("multer");
 
+//diskStorage is a multer method for storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, file.originalname);
